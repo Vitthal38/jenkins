@@ -1,43 +1,26 @@
 pipeline {
     agent any
 
-    environment {
-        DEPLOY_PATH = "/var/www/html"
-    }
-
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/Vitthal38/jenkins.git'
             }
         }
 
-        stage('Deploy Locally') {
+        stage('Deploy') {
             steps {
                 sh '''
-                echo "Cleaning old files..."
+                echo "Deploying application..."
+
                 rm -rf /var/www/html/*
-
-                echo "Copying new files..."
-                 cp -r * /var/www/html/
-
-                echo "Setting ownership..."
-                chown -R www-data:www-data /var/www/html
-
-                echo "Setting permissions..."
-                chmod -R 755 /var/www/html
+                cp -r * /var/www/html/
                 '''
             }
         }
+
     }
 
-    post {
-        success {
-            echo "Deployment Successful"
-        }
-        failure {
-            echo "Deployment Failed"
-        }
-    }
+}
