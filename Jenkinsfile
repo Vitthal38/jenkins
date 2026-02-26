@@ -2,8 +2,6 @@ pipeline {
     agent any
 
     environment {
-        SERVER_IP = "YOUR_SERVER_IP"
-        SERVER_USER = "ubuntu"
         DEPLOY_PATH = "/var/www/html"
     }
 
@@ -12,21 +10,34 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/Vitthal38/jenkins.git'
+                    url: 'https://github.com/Vitthal38/jenkins.git'
             }
         }
 
-        stage('Deploy to Ubuntu Server') {
+        stage('Deploy Locally') {
             steps {
-                sshagent(credentials: ['ubuntu-server-ssh-key']) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} '
-                        sudo rm -rf ${DEPLOY_PATH}/*
-                    '
+                sh '''
+                echo "Cleaning old files..."
+                sudo rm -rf /var/www/html/*
 
-                    scp -o StrictHostKeyChecking=no -r * ${SERVER_USER}@${SERVER_IP}:${DEPLOY_PATH}
-                    """
-                }
+                echo "Copying new files..."
+                sudo cp -r * /var/www/html/
+
+                echo "Setting ownership..."
+                sudo chown -R www-data:www-data /var/www/html
+
+                echo "Setting permissions..."
+                sudo chmod -R 755 /var/www/html
+                '''
             }
         }
-   
+    }
+
+    post {
+        success {
+            echo "Deployment Successful"
+        }
+        failure {
+            echo "Deployment Failed"
+        }
+    }
