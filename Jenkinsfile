@@ -18,16 +18,16 @@ pipeline {
             steps {
                 sh '''
                 echo "Cleaning old files..."
-                sudo rm -rf /var/www/html/*
+                rm -rf /var/www/html/*
 
                 echo "Copying new files..."
-                sudo cp -r * /var/www/html/
+                 cp -r * /var/www/html/
 
                 echo "Setting ownership..."
-                sudo chown -R www-data:www-data /var/www/html
+                chown -R www-data:www-data /var/www/html
 
                 echo "Setting permissions..."
-                sudo chmod -R 755 /var/www/html
+                chmod -R 755 /var/www/html
                 '''
             }
         }
